@@ -1,37 +1,48 @@
 {
-  "name": "qunitjs",
-  "title": "QUnit",
-  "description": "An easy-to-use JavaScript Unit Testing framework.",
-  "version": "1.12.0pre",
+  "name": "qunit-assert-html",
+  "description": "QUnit HTML assertion addon",
+  "version": "0.1.0",
+  "homepage": "https://github.com/JamesMGreene/qunit-assert-html",
   "author": {
-    "name": "jQuery Foundation and other contributors",
-    "url": "https://github.com/jquery/qunit/blob/master/AUTHORS.txt"
+    "name": "James M. Greene",
+    "email": "james.m.greene@gmail.com",
+    "url": "http://jamesgreene.net/"
   },
-  "contributors": [
-    "John Resig <jeresig@gmail.com> (http://ejohn.org/)",
-    "Jörn Zaefferer <joern.zaefferer@gmail.com> (http://bassistance.de/)"
-  ],
-  "homepage": "http://qunitjs.com",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jquery/qunit.git"
+    "url": "git://github.com/JamesMGreene/qunit-assert-html.git"
   },
   "bugs": {
-    "url": "https://github.com/jquery/qunit/issues"
+    "url": "https://github.com/JamesMGreene/qunit-assert-html/issues"
   },
-  "license": {
-    "name": "MIT",
-    "url": "http://www.opensource.org/licenses/mit-license.php"
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/JamesMGreene/qunit-assert-html/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "src/qunit-assert-html",
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "qunitjs": ">= 1.11.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0rc7",
+    "grunt-contrib-jshint": "> 0.1.0",
+    "grunt-contrib-qunit": "> 0.1.0",
+    "grunt-contrib-uglify": "> 0.1.0"
   },
   "keywords": [
-    "testing",
-    "unit",
-    "jquery"
-  ],
-  "main": "qunit/qunit.js",
-  "devDependencies": {
-    "grunt": "0.3.x",
-    "grunt-git-authors": "1.0.0",
-    "testswarm": "1.0.0-alpha"
-  }
+    "QUnit",
+    "addon",
+    "assert",
+    "assertion",
+    "HTML",
+    "assertHTMLEquals"
+  ]
 }

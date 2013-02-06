@@ -1,63 +1,32 @@
-[QUnit](http://qunitjs.com) - A JavaScript Unit Testing Framework.
-================================
+# QUnit HTML assertion addon
 
-QUnit is a powerful, easy-to-use, JavaScript unit testing framework. It's used by the jQuery
-project to test its code and plugins but is capable of testing any generic
-JavaScript code (and even capable of testing JavaScript code on the server-side).
+This addon for QUnit adds `QUnit.htmlEqual` and `QUnit.notHtmlEqual` assertion methods to test that two HTML strings are equivalent (or not) after a rigorous normalization process.
 
-QUnit is especially useful for regression testing: Whenever a bug is reported,
-write a test that asserts the existence of that particular bug. Then fix it and
-commit both. Every time you work on the code again, run the tests. If the bug
-comes up again - a regression - you'll spot it immediately and know how to fix
-it, because you know what code you just changed.
+## Usage
+```js
+QUnit.htmlEqual(actual, expected [, message]);
+QUnit.notHtmlEqual(actual, expected [, message]);
+```
 
-Having good unit test coverage makes safe refactoring easy and cheap. You can
-run the tests after each small refactoring step and always know what change
-broke something.
+## Examples
+```js
+QUnit.htmlEqual('<B TITLE=test>test</B>', '<b title="test">test</b>');
+```
 
-QUnit is similar to other unit testing frameworks like JUnit, but makes use of
-the features JavaScript provides and helps with testing code in the browser, e.g.
-with its stop/start facilities for testing asynchronous code.
+For more examples, refer to the unit tests.
 
-If you are interested in helping developing QUnit, you are in the right place.
-For related discussions, visit the
-[QUnit and Testing forum](http://forum.jquery.com/qunit-and-testing).
+## Compatibility
+This addon currently works in IE7+ (IE6 untested) but does not fully normalize certain CSS style properties (e.g. color values) in IE < 9. For a little more info, see [QUnit PR #368](https://github.com/jquery/qunit/pull/368).
 
-Development
------------
+## Documentation
+_(Coming soon)_
 
-To submit patches, fork the repository, create a branch for the change. Then implement
-the change, run `grunt` to lint and test it, then commit, push and create a pull request.
+## Contributing
+In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [grunt](http://gruntjs.com/).
 
-Include some background for the change in the commit message and `Fixes #nnn`, referring
-to the issue number you're addressing.
+## Release History
+_(Nothing yet)_
 
-To run `grunt`, you need `node` and `npm`, then `npm install grunt -g`. That gives you a global
-grunt binary. For additional grunt tasks, also run `npm install`.
-
-Releases
---------
-
-Install git-extras and run `git changelog` to update History.md. Clean up the
-changelog, removing merge commits or whitespace cleanups.
-
-Update qunit/qunit.js|css and package.json to the release version, commit and
-tag (Put the 'v' in front of the tag, e.g. `v1.8.0`), update them again to
-the next version, commit and push commits and tags:
-
-	git push --tags origin master
-
-To upload to code.jquery.com (replace $version accordingly), ssh to code.origin.jquery.com:
-
-	cp qunit/qunit.js /var/www/html/code.jquery.com/qunit/qunit-$version.js
-	cp qunit/qunit.css /var/www/html/code.jquery.com/qunit/qunit-$version.css
-
-Then update /var/www/html/code.jquery.com/index.html and purge it with:
-
-	curl -s http://code.origin.jquery.com/?reload
-
-Update web-base-template to link to those files for qunitjs.com.
-
-Publish to npm via
-
-	npm publish
+## License
+Copyright (c) 2013 James M. Greene  
+Licensed under the MIT license.

@@ -77,7 +77,7 @@
 				temp = camelCaseFn( s );
 				camelCaseMemoizer[s] = temp;
 				return temp;
-			}
+			};
 		})();
 
 		var styleKeySortingFn = function( a, b ) {
@@ -230,7 +230,7 @@
 				iframeReady = true;
 			},
 			iframeReadied = function() {
-				if (iframe.readystate == "complete") {
+				if (iframe.readyState === "complete" || iframe.readyState === 4) {
 					iframeReady = true;
 				}
 			},
@@ -339,7 +339,7 @@
 		 * @param {String} expected The excepted HTML before normalization.
 		 * @param {String} [message] Optional message to display in the results.
 		 */
-		htmlEqual: function( actual, expected, message, expectedSerialization ) {
+		htmlEqual: function( actual, expected, message ) {
 			if ( !message ) {
 				message = "HTML should be equal";
 			}
