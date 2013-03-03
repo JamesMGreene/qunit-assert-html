@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/JamesMGreene/qunit-assert-html.png)](https://travis-ci.org/JamesMGreene/qunit-assert-html)
+
 # QUnit HTML assertion addon
 
 This addon for [QUnit](https://github.com/jquery/qunit) adds `QUnit.assert.htmlEqual` and `QUnit.assert.notHtmlEqual` assertion methods to test that two HTML strings are equivalent (or not) after a rigorous normalization process.
