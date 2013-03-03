@@ -329,12 +329,12 @@
 		return function() { return iframeApi; };
 	})();
 
-	QUnit.extend( QUnit, {
+	QUnit.extend( QUnit.assert, {
 
 		/**
 		 * Compare two snippets of HTML for equality after normalization.
 		 *
-		 * @example QUnit.htmlEqual("<B>Hello, QUnit!</B>  ", "<b>Hello, QUnit!</b>", "HTML should be equal");
+		 * @example QUnit.assert.htmlEqual("<B>Hello, QUnit!</B>  ", "<b>Hello, QUnit!</b>", "HTML should be equal");
 		 * @param {String} actual The actual HTML before normalization.
 		 * @param {String} expected The excepted HTML before normalization.
 		 * @param {String} [message] Optional message to display in the results.
@@ -344,13 +344,13 @@
 				message = "HTML should be equal";
 			}
 
-			QUnit.deepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
+			QUnit.assert.deepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
 		},
 
 		/**
 		 * Compare two snippets of HTML for inequality after normalization.
 		 *
-		 * @example QUnit.notHtmlEqual("<b>Hello, <i>QUnit!</i></b>", "<b>Hello, QUnit!</b>", "HTML should not be equal");
+		 * @example QUnit.assert.notHtmlEqual("<b>Hello, <i>QUnit!</i></b>", "<b>Hello, QUnit!</b>", "HTML should not be equal");
 		 * @param {String} actual The actual HTML before normalization.
 		 * @param {String} expected The excepted HTML before normalization.
 		 * @param {String} [message] Optional message to display in the results.
@@ -360,17 +360,17 @@
 				message = "HTML should not be equal";
 			}
 
-			QUnit.notDeepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
+			QUnit.assert.notDeepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
 		},
 
 		/**
 		 * Normalize and serialize an HTML snippet. Primarily only exposed for unit testing purposes.
 		 *
-		 * @example QUnit.serializeHtml('<b style="color:red;">Test</b>');
+		 * @example QUnit.assert._serializeHtml('<b style="color:red;">Test</b>');
 		 * @param {String} html The HTML snippet to normalize and serialize.
 		 * @returns {Object[]} The normalized and serialized form of the HTML snippet.
 		 */
-		serializeHtml: serializeHtml
+		_serializeHtml: serializeHtml
 
 	});
 })( QUnit, this );

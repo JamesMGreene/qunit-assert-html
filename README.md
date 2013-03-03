@@ -1,16 +1,16 @@
 # QUnit HTML assertion addon
 
-This addon for [QUnit](https://github.com/jquery/qunit) adds `QUnit.htmlEqual` and `QUnit.notHtmlEqual` assertion methods to test that two HTML strings are equivalent (or not) after a rigorous normalization process.
+This addon for [QUnit](https://github.com/jquery/qunit) adds `QUnit.assert.htmlEqual` and `QUnit.assert.notHtmlEqual` assertion methods to test that two HTML strings are equivalent (or not) after a rigorous normalization process.
 
 ## Usage
 ```js
-QUnit.htmlEqual(actual, expected [, message]);
-QUnit.notHtmlEqual(actual, expected [, message]);
+QUnit.assert.htmlEqual(actual, expected [, message]);
+QUnit.assert.notHtmlEqual(actual, expected [, message]);
 ```
 
 ## Examples
 ```js
-QUnit.htmlEqual('<B TITLE=test>test</B>', '<b title="test">test</b>');
+QUnit.assert.htmlEqual('<B TITLE=test>test</B>', '<b title="test">test</b>');
 ```
 
 For more examples, refer to the unit tests.
