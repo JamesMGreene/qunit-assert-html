@@ -24,7 +24,7 @@
   "main": "src/qunit-assert-html",
   "engines": {},
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt travis --verbose"
   },
   "dependencies": {
     "qunitjs": ">= 1.11.0"
