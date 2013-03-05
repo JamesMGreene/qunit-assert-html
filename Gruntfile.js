@@ -2,8 +2,17 @@
 
 module.exports = function(grunt) {
 
+  var localPort = 8000;
+
   // Project configuration.
   grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+    banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+      '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+      '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+      '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
+    // Task configuration.
     jshint: {
       options: {
         jshintrc: '.jshintrc'
@@ -18,39 +27,52 @@ module.exports = function(grunt) {
         src: ['test/**/*.js']
       }
     },
-    qunit: {
-      files: ['test/**/*.html']
-    },
-    uglify: {
-      dist: {
-        src: 'src/qunit-assert-html.js',
-        dest: 'dist/qunit-assert-html.min.js'
+    connect: {
+      server: {
+        options: {
+          port: localPort
+        }
       }
     },
-    watch: {
-      gruntfile: {
-        files: '<%= jshint.gruntfile.src %>',
-        tasks: ['jshint:gruntfile']
+    qunit: {
+      file: ['test/index.html'],
+      http: {
+        options: {
+          urls: ['http://localhost:8000/test/index.html']
+        }
+      }
+    },
+    concat: {
+      options: {
+        banner: '<%= banner %>',
+        stripBanners: true
       },
-      src: {
-        files: '<%= jshint.src.src %>',
-        tasks: ['jshint:src', 'qunit']
+      dist: {
+        src: ['src/<%= pkg.name %>.js'],
+        dest: 'dist/<%= pkg.name %>.js'
+      }
+    },
+    uglify: {
+      options: {
+        banner: '<%= banner %>'
       },
-      test: {
-        files: '<%= jshint.test.src %>',
-        tasks: ['jshint:test', 'qunit']
+      dist: {
+        src: '<%= concat.dist.dest %>',
+        dest: 'dist/<%= pkg.name %>.min.js'
       }
     }
   });
   
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-qunit');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'qunit', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'connect', 'qunit', 'concat', 'uglify']);
   // Travis-CI task.
-  grunt.registerTask('travis', ['jshint', 'qunit']);
+  grunt.registerTask('travis', ['jshint', 'connect', 'qunit']);
 
 };

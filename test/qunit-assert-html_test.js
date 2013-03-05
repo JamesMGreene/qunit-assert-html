@@ -1,14 +1,13 @@
-/*global QUnit:false, module:false, test:false */
+/*global module:false, test:false */
 (function() {
 	'use strict';
 
 	var deepEqualIgnoringUnlistedStyleRules = null,
-		notDeepEqualIgnoringUnlistedStyleRules = null,
 		assertStylePropIsColor = null,
 		assertFontWeightIsBold = null,
 		assertBackgroundImageIsNone = null;
 
-	// Set `deepEqualIgnoringUnlistedStyleRules` and `notDeepEqualIgnoringUnlistedStyleRules`
+	// Set `deepEqualIgnoringUnlistedStyleRules`
 	(function() {
 		var objectKeys = Object.keys || (function() {
 				var hasOwn = function( obj, propName ) {
@@ -125,18 +124,11 @@
 				return cleanedActual;
 			};
 
-		deepEqualIgnoringUnlistedStyleRules = function(actual, expected, message) {
+		deepEqualIgnoringUnlistedStyleRules = function(assert, actual, expected, message) {
 			if (!message) {
 				message = "Serialized nodes are equivalent, ignoring unlisted attributes";
 			}
-			QUnit.assert.deepEqual(removeUnlistedStyleRulesFromSerializedNodes(actual, expected), expected, message);
-		};
-
-		notDeepEqualIgnoringUnlistedStyleRules = function(actual, expected, message) {
-			if (!message) {
-				message = "Serialized nodes are not equivalent, even after ignoring unlisted attributes";
-			}
-			QUnit.assert.notDeepEqual(removeUnlistedStyleRulesFromSerializedNodes(actual, expected), expected, message);
+			assert.deepEqual(removeUnlistedStyleRulesFromSerializedNodes(actual, expected), expected, message);
 		};
 	})();
 
@@ -146,7 +138,7 @@
 			greenColorRegex = /^(green|rgb\(0,\s*255,\s*0\)|#0F0|#00FF00)$/i,
 			boldRegex = /^(bold|700)$/i;
 
-		assertStylePropIsColor = function(serializedElementNode, stylePropName, colorName) {
+		assertStylePropIsColor = function(assert, serializedElementNode, stylePropName, colorName) {
 			var styleProp = serializedElementNode.Attributes.style[stylePropName],
 				colorRegex = (function() {
 					switch (colorName.toLowerCase()) {
@@ -158,16 +150,16 @@
 							throw new Error('Unexpected value for `colorName`: "' + colorName + '"');
 					}
 				})();
-			QUnit.assert.strictEqual(colorRegex.test(styleProp), true, (stylePropName + ': ' + colorName));
+			assert.strictEqual(colorRegex.test(styleProp), true, (stylePropName + ': ' + colorName));
 		};
 
-		assertFontWeightIsBold = function(serializedElementNode) {
+		assertFontWeightIsBold = function(assert, serializedElementNode) {
 			var fontWeightStyle = serializedElementNode.Attributes.style.fontWeight;
-			QUnit.assert.strictEqual(boldRegex.test(fontWeightStyle), true, 'fontWeight: bold');
+			assert.strictEqual(boldRegex.test(fontWeightStyle), true, 'fontWeight: bold');
 		};
 	})();
 
-	assertBackgroundImageIsNone = function(serializedElementNode) {
+	assertBackgroundImageIsNone = function(assert, serializedElementNode) {
 		var result = !!serializedElementNode && !!serializedElementNode.Attributes;
 		if (result && !!serializedElementNode.Attributes.style) {
 			var bgImage = serializedElementNode.Attributes.style.backgroundImage;
@@ -175,18 +167,18 @@
 				result = result && /^none$/ig.test(bgImage);
 			}
 		}
-		QUnit.assert.strictEqual(result, true, 'backgroundImage: none');
+		assert.strictEqual(result, true, 'backgroundImage: none');
 	};
 
 
 
 	module('qunit-html addon tests');
 
-	test('Equivalent HTML - Identical text nodes are equivalent without normalization', function() {
-		QUnit.assert.htmlEqual('test', 'test');
+	test('Equivalent HTML - Identical text nodes are equivalent without normalization', function(assert) {
+		assert.htmlEqual('test', 'test');
 
-		QUnit.assert.deepEqual(
-			QUnit.assert._serializeHtml('test'),
+		assert.deepEqual(
+			assert._serializeHtml('test'),
 			[
 				{
 					NodeType: 3,
@@ -197,11 +189,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Identical elements are equivalent without normalization', function() {
-		QUnit.assert.htmlEqual('<b>test</b>', '<b>test</b>');
+	test('Equivalent HTML - Identical elements are equivalent without normalization', function(assert) {
+		assert.htmlEqual('<b>test</b>', '<b>test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b>test</b>'),
+			assert,
+			assert._serializeHtml('<b>test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -219,11 +212,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Identical singleton/empty elements are equivalent without normalization', function() {
-		QUnit.assert.htmlEqual('<br />', '<br />');
+	test('Equivalent HTML - Identical singleton/empty elements are equivalent without normalization', function(assert) {
+		assert.htmlEqual('<br />', '<br />');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<br />'),
+			assert,
+			assert._serializeHtml('<br />'),
 			[
 				{
 					NodeType: 1,
@@ -235,11 +229,11 @@
 		);
 	});
 
-	test('Equivalent HTML - Text nodes are equivalent after trimming preceding space(s)', function() {
-		QUnit.assert.htmlEqual('  test', 'test');
+	test('Equivalent HTML - Text nodes are equivalent after trimming preceding space(s)', function(assert) {
+		assert.htmlEqual('  test', 'test');
 
-		QUnit.assert.deepEqual(
-			QUnit.assert._serializeHtml('  test'),
+		assert.deepEqual(
+			assert._serializeHtml('  test'),
 			[
 				{
 					NodeType: 3,
@@ -250,11 +244,11 @@
 		);
 	});
 
-	test('Equivalent HTML - Text nodes are equivalent after trimming preceding tab(s)', function() {
-		QUnit.assert.htmlEqual('\ttest', 'test');
+	test('Equivalent HTML - Text nodes are equivalent after trimming preceding tab(s)', function(assert) {
+		assert.htmlEqual('\ttest', 'test');
 
-		QUnit.assert.deepEqual(
-			QUnit.assert._serializeHtml('\ttest'),
+		assert.deepEqual(
+			assert._serializeHtml('\ttest'),
 			[
 				{
 					NodeType: 3,
@@ -265,11 +259,11 @@
 		);
 	});
 
-	test('Equivalent HTML - Text nodes are equivalent after trimming preceding newline(s)', function() {
-		QUnit.assert.htmlEqual('\ntest', 'test');
+	test('Equivalent HTML - Text nodes are equivalent after trimming preceding newline(s)', function(assert) {
+		assert.htmlEqual('\ntest', 'test');
 
-		QUnit.assert.deepEqual(
-			QUnit.assert._serializeHtml('\ntest'),
+		assert.deepEqual(
+			assert._serializeHtml('\ntest'),
 			[
 				{
 					NodeType: 3,
@@ -280,11 +274,11 @@
 		);
 	});
 
-	test('Equivalent HTML - Text nodes are equivalent after trimming following space(s)', function() {
-		QUnit.assert.htmlEqual('test  ', 'test');
+	test('Equivalent HTML - Text nodes are equivalent after trimming following space(s)', function(assert) {
+		assert.htmlEqual('test  ', 'test');
 
-		QUnit.assert.deepEqual(
-			QUnit.assert._serializeHtml('test  '),
+		assert.deepEqual(
+			assert._serializeHtml('test  '),
 			[
 				{
 					NodeType: 3,
@@ -295,11 +289,11 @@
 		);
 	});
 
-	test('Equivalent HTML - Text nodes are equivalent after trimming following tab(s)', function() {
-		QUnit.assert.htmlEqual('test\t', 'test');
+	test('Equivalent HTML - Text nodes are equivalent after trimming following tab(s)', function(assert) {
+		assert.htmlEqual('test\t', 'test');
 
-		QUnit.assert.deepEqual(
-			QUnit.assert._serializeHtml('test\t'),
+		assert.deepEqual(
+			assert._serializeHtml('test\t'),
 			[
 				{
 					NodeType: 3,
@@ -310,11 +304,11 @@
 		);
 	});
 
-	test('Equivalent HTML - Text nodes are equivalent after trimming following newline(s)', function() {
-		QUnit.assert.htmlEqual('test\n', 'test');
+	test('Equivalent HTML - Text nodes are equivalent after trimming following newline(s)', function(assert) {
+		assert.htmlEqual('test\n', 'test');
 
-		QUnit.assert.deepEqual(
-			QUnit.assert._serializeHtml('test\n'),
+		assert.deepEqual(
+			assert._serializeHtml('test\n'),
 			[
 				{
 					NodeType: 3,
@@ -325,11 +319,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Elements are equivalent after trimming preceding space(s)', function() {
-		QUnit.assert.htmlEqual('  <b>test</b>', '<b>test</b>');
+	test('Equivalent HTML - Elements are equivalent after trimming preceding space(s)', function(assert) {
+		assert.htmlEqual('  <b>test</b>', '<b>test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('  <b>test</b>'),
+			assert,
+			assert._serializeHtml('  <b>test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -347,11 +342,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Elements are equivalent after trimming preceding tab(s)', function() {
-		QUnit.assert.htmlEqual('\t<b>test</b>', '<b>test</b>');
+	test('Equivalent HTML - Elements are equivalent after trimming preceding tab(s)', function(assert) {
+		assert.htmlEqual('\t<b>test</b>', '<b>test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('\t<b>test</b>'),
+			assert,
+			assert._serializeHtml('\t<b>test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -369,11 +365,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Elements are equivalent after trimming preceding newline(s)', function() {
-		QUnit.assert.htmlEqual('\n<b>test</b>', '<b>test</b>');
+	test('Equivalent HTML - Elements are equivalent after trimming preceding newline(s)', function(assert) {
+		assert.htmlEqual('\n<b>test</b>', '<b>test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('\n<b>test</b>'),
+			assert,
+			assert._serializeHtml('\n<b>test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -391,11 +388,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Elements are equivalent after trimming following space(s)', function() {
-		QUnit.assert.htmlEqual('<b>test</b>  ', '<b>test</b>');
+	test('Equivalent HTML - Elements are equivalent after trimming following space(s)', function(assert) {
+		assert.htmlEqual('<b>test</b>  ', '<b>test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b>test</b>  '),
+			assert,
+			assert._serializeHtml('<b>test</b>  '),
 			[
 				{
 					NodeType: 1,
@@ -413,11 +411,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Elements are equivalent after trimming following tab(s)', function() {
-		QUnit.assert.htmlEqual('<b>test</b>\t', '<b>test</b>');
+	test('Equivalent HTML - Elements are equivalent after trimming following tab(s)', function(assert) {
+		assert.htmlEqual('<b>test</b>\t', '<b>test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b>test</b>\t'),
+			assert,
+			assert._serializeHtml('<b>test</b>\t'),
 			[
 				{
 					NodeType: 1,
@@ -435,11 +434,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Elements are equivalent after trimming following newline(s)', function() {
-		QUnit.assert.htmlEqual('<b>test</b>\n', '<b>test</b>');
+	test('Equivalent HTML - Elements are equivalent after trimming following newline(s)', function(assert) {
+		assert.htmlEqual('<b>test</b>\n', '<b>test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b>test</b>\n'),
+			assert,
+			assert._serializeHtml('<b>test</b>\n'),
 			[
 				{
 					NodeType: 1,
@@ -457,11 +457,12 @@
 		);
 	});
 
-	test('Equivalent HTML - IE element tag name uppercasing', function() {
-		QUnit.assert.htmlEqual('<B>test</B>', '<b>test</b>');
+	test('Equivalent HTML - IE element tag name uppercasing', function(assert) {
+		assert.htmlEqual('<B>test</B>', '<b>test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<B>test</B>'),
+			assert,
+			assert._serializeHtml('<B>test</B>'),
 			[
 				{
 					NodeType: 1,
@@ -479,11 +480,12 @@
 		);
 	});
 
-	test('Equivalent HTML - IE attribute name uppercasing', function() {
-		QUnit.assert.htmlEqual('<b TITLE="testAttr">test</b>', '<b title="testAttr">test</b>');
+	test('Equivalent HTML - IE attribute name uppercasing', function(assert) {
+		assert.htmlEqual('<b TITLE="testAttr">test</b>', '<b title="testAttr">test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b TITLE="testAttr">test</b>'),
+			assert,
+			assert._serializeHtml('<b TITLE="testAttr">test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -503,11 +505,12 @@
 		);
 	});
 
-	test('Equivalent HTML - IE attribute optimization drops "unnecessary" quotes', function() {
-		QUnit.assert.htmlEqual('<b title=testAttr>test</b>', '<b title="testAttr">test</b>');
+	test('Equivalent HTML - IE attribute optimization drops "unnecessary" quotes', function(assert) {
+		assert.htmlEqual('<b title=testAttr>test</b>', '<b title="testAttr">test</b>');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b title=testAttr>test</b>'),
+			assert,
+			assert._serializeHtml('<b title=testAttr>test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -527,11 +530,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Singleton/empty elements with and without insignificant whitespace', function() {
-		QUnit.assert.htmlEqual('<br/>', '<br />');
+	test('Equivalent HTML - Singleton/empty elements with and without insignificant whitespace', function(assert) {
+		assert.htmlEqual('<br/>', '<br />');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<br/>'),
+			assert,
+			assert._serializeHtml('<br/>'),
 			[
 				{
 					NodeType: 1,
@@ -543,11 +547,12 @@
 		);
 	});
 
-	test('Equivalent HTML - Singleton/empty elements without self-closing slash', function() {
-		QUnit.assert.htmlEqual('<br>', '<br />');
+	test('Equivalent HTML - Singleton/empty elements without self-closing slash', function(assert) {
+		assert.htmlEqual('<br>', '<br />');
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<br>'),
+			assert,
+			assert._serializeHtml('<br>'),
 			[
 				{
 					NodeType: 1,
@@ -559,14 +564,15 @@
 		);
 	});
 
-	test('Equivalent HTML - Possible attribute reordering based on alphabetical order', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Possible attribute reordering based on alphabetical order', function(assert) {
+		assert.htmlEqual(
 			'<b class="className" id="guid" lang="en" title="titleText">test</b>',
 			'<b id="guid" class="className" title="titleText" lang="en">test</b>'
 		);
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b class="className" id="guid" lang="en" title="titleText">test</b>'),
+			assert,
+			assert._serializeHtml('<b class="className" id="guid" lang="en" title="titleText">test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -589,14 +595,15 @@
 		);
 	});
 
-	test('Equivalent HTML - Possible attribute reordering based on superficial attribute prioritization for `input` elements', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Possible attribute reordering based on superficial attribute prioritization for `input` elements', function(assert) {
+		assert.htmlEqual(
 			'<input id="guid" type="text" value="blah" size="5" />',
 			'<input id="guid" type="text" size="5" value="blah" />'
 		);
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<input id="guid" type="text" value="blah" size="5" />'),
+			assert,
+			assert._serializeHtml('<input id="guid" type="text" value="blah" size="5" />'),
 			[
 				{
 					NodeType: 1,
@@ -613,15 +620,16 @@
 		);
 	});
 
-	test('Equivalent HTML - Possible attribute reordering based on superficial attribute prioritization for `input` elements without self-closing slash', function() {
+	test('Equivalent HTML - Possible attribute reordering based on superficial attribute prioritization for `input` elements without self-closing slash', function(assert) {
 		// From: http://stackoverflow.com/questions/9227517/firefox-tag-attributes-badly-reordered-after-html-parse
-		QUnit.assert.htmlEqual(
+		assert.htmlEqual(
 			'<input id="guid" type="text" value="blah" size="5">',
 			'<input id="guid" type="text" size="5" value="blah">'
 		);
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<input id="guid" type="text" value="blah" size="5">'),
+			assert,
+			assert._serializeHtml('<input id="guid" type="text" value="blah" size="5">'),
 			[
 				{
 					NodeType: 1,
@@ -638,14 +646,15 @@
 		);
 	});
 
-	test('Equivalent HTML - Normalize `class` attribute with preceding space(s)', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Normalize `class` attribute with preceding space(s)', function(assert) {
+		assert.htmlEqual(
 			'<b class=" class1">test</b>',
 			'<b class="class1">test</b>'
 		);
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b class=" class1">test</b>'),
+			assert,
+			assert._serializeHtml('<b class=" class1">test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -665,14 +674,15 @@
 		);
 	});
 
-	test('Equivalent HTML - Normalize `class` attribute with following space(s)', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Normalize `class` attribute with following space(s)', function(assert) {
+		assert.htmlEqual(
 			'<b class="class2 ">test</b>',
 			'<b class="class2">test</b>'
 		);
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b class="class2 ">test</b>'),
+			assert,
+			assert._serializeHtml('<b class="class2 ">test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -692,14 +702,15 @@
 		);
 	});
 
-	test('Equivalent HTML - Normalize `class` attribute with in-between multiple space(s)', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Normalize `class` attribute with in-between multiple space(s)', function(assert) {
+		assert.htmlEqual(
 			'<b class="class1  class2">test</b>',
 			'<b class="class1 class2">test</b>'
 		);
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b class="class1  class2">test</b>'),
+			assert,
+			assert._serializeHtml('<b class="class1  class2">test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -719,14 +730,15 @@
 		);
 	});
 
-	test('Equivalent HTML - Normalize `class` attribute with preceding, in-between, and following whitespace character(s)', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Normalize `class` attribute with preceding, in-between, and following whitespace character(s)', function(assert) {
+		assert.htmlEqual(
 			'<b class="\t\n class1 \t\r\n class2 \n\t">test</b>',
 			'<b class="class1 class2">test</b>'
 		);
 
 		deepEqualIgnoringUnlistedStyleRules(
-			QUnit.assert._serializeHtml('<b class="\t\n class1 \t\r\n class2 \n\t">test</b>'),
+			assert,
+			assert._serializeHtml('<b class="\t\n class1 \t\r\n class2 \n\t">test</b>'),
 			[
 				{
 					NodeType: 1,
@@ -746,15 +758,16 @@
 		);
 	});
 
-	test('Equivalent HTML - Compares computed styles rather than style attributes - An overridden single rule', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Compares computed styles rather than style attributes - An overridden single rule', function(assert) {
+		assert.htmlEqual(
 			'<b style="font-weight:normal; font-weight:bold;">test</b>',
 			'<b style="font-weight:bold;">test</b>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b style="font-weight:normal; font-weight:bold;">test</b>');
+		var serializedActual = assert._serializeHtml('<b style="font-weight:normal; font-weight:bold;">test</b>');
 		// Validate everything but fontWeight
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -772,18 +785,19 @@
 			]
 		);
 		// Validate fontWeight
-		assertFontWeightIsBold(serializedActual[0]);
+		assertFontWeightIsBold(assert, serializedActual[0]);
 	});
 
-	test('Equivalent HTML - Compares computed styles rather than style attributes - Named colors with casing differences', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Compares computed styles rather than style attributes - Named colors with casing differences', function(assert) {
+		assert.htmlEqual(
 			'<b style="color:Red;">test</b>',
 			'<b style="color:red;">test</b>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b style="color:Red;">test</b>');
+		var serializedActual = assert._serializeHtml('<b style="color:Red;">test</b>');
 		// Validate everything but color
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -801,18 +815,19 @@
 			]
 		);
 		// Validate color
-		assertStylePropIsColor(serializedActual[0], 'color', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'color', 'red');
 	});
 
-	test('Equivalent HTML - Compares computed styles rather than style attributes - Hex vs. named colors', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Compares computed styles rather than style attributes - Hex vs. named colors', function(assert) {
+		assert.htmlEqual(
 			'<b style="color:#FF0000;">test</b>',
 			'<b style="color:red;">test</b>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b style="color:#FF0000;">test</b>');
+		var serializedActual = assert._serializeHtml('<b style="color:#FF0000;">test</b>');
 		// Validate everything but color
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -830,18 +845,19 @@
 			]
 		);
 		// Validate color
-		assertStylePropIsColor(serializedActual[0], 'color', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'color', 'red');
 	});
 
-	test('Equivalent HTML - Compares computed styles rather than style attributes - Hex colors with casing differences', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Compares computed styles rather than style attributes - Hex colors with casing differences', function(assert) {
+		assert.htmlEqual(
 			'<b style="color:#ff0000;">test</b>',
 			'<b style="color:#FF0000;">test</b>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b style="color:#ff0000;">test</b>');
+		var serializedActual = assert._serializeHtml('<b style="color:#ff0000;">test</b>');
 		// Validate everything but color
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -859,18 +875,19 @@
 			]
 		);
 		// Validate color
-		assertStylePropIsColor(serializedActual[0], 'color', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'color', 'red');
 	});
 
-	test('Equivalent HTML - Compares computed styles rather than style attributes - Hex colors shorthand vs. normal form', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Compares computed styles rather than style attributes - Hex colors shorthand vs. normal form', function(assert) {
+		assert.htmlEqual(
 			'<b style="color:#F00;">test</b>',
 			'<b style="color:#FF0000;">test</b>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b style="color:#F00;">test</b>');
+		var serializedActual = assert._serializeHtml('<b style="color:#F00;">test</b>');
 		// Validate everything but color
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -888,18 +905,19 @@
 			]
 		);
 		// Validate color
-		assertStylePropIsColor(serializedActual[0], 'color', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'color', 'red');
 	});
 
-	test('Equivalent HTML - Compares computed styles rather than style attributes - RGB vs. hex colors', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Compares computed styles rather than style attributes - RGB vs. hex colors', function(assert) {
+		assert.htmlEqual(
 			'<b style="color:rgb(255, 0, 0);">test</b>',
 			'<b style="color:#FF0000;">test</b>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b style="color:rgb(255, 0, 0);">test</b>');
+		var serializedActual = assert._serializeHtml('<b style="color:rgb(255, 0, 0);">test</b>');
 		// Validate everything but color
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -917,18 +935,19 @@
 			]
 		);
 		// Validate color
-		assertStylePropIsColor(serializedActual[0], 'color', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'color', 'red');
 	});
 
-	test('Equivalent HTML - Compares computed styles rather than style attributes - Rules in different orders', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Compares computed styles rather than style attributes - Rules in different orders', function(assert) {
+		assert.htmlEqual(
 			'<b style="font-weight:bold; color:red;">test</b>',
 			'<b style="color:red; font-weight:bold;">test</b>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b style="font-weight:bold; color:red;">test</b>');
+		var serializedActual = assert._serializeHtml('<b style="font-weight:bold; color:red;">test</b>');
 		// Validate everything but color and fontWeight
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -946,20 +965,21 @@
 			]
 		);
 		// Validate fontWeight
-		assertFontWeightIsBold(serializedActual[0]);
+		assertFontWeightIsBold(assert, serializedActual[0]);
 		// Validate color
-		assertStylePropIsColor(serializedActual[0], 'color', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'color', 'red');
 	});
 
-	test('Equivalent HTML - Compares computed styles rather than style attributes - Shorthand rule vs. individual normal form rules', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Compares computed styles rather than style attributes - Shorthand rule vs. individual normal form rules', function(assert) {
+		assert.htmlEqual(
 			'<b style="border:5px solid red;">test</b>',
 			'<b style="border-width:5px; border-style:solid; border-color:red;">test</b>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b style="border:5px solid red;">test</b>');
+		var serializedActual = assert._serializeHtml('<b style="border:5px solid red;">test</b>');
 		// Validate everything but borderColor
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -989,21 +1009,22 @@
 			]
 		);
 		// Validate borderColor
-		assertStylePropIsColor(serializedActual[0], 'borderTopColor', 'red');
-		assertStylePropIsColor(serializedActual[0], 'borderRightColor', 'red');
-		assertStylePropIsColor(serializedActual[0], 'borderBottomColor', 'red');
-		assertStylePropIsColor(serializedActual[0], 'borderLeftColor', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'borderTopColor', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'borderRightColor', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'borderBottomColor', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'borderLeftColor', 'red');
 	});
 
-	test('Equivalent HTML - Compares computed styles rather than style attributes - An overridden shorthand rule fully overrides its previous state', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Compares computed styles rather than style attributes - An overridden shorthand rule fully overrides its previous state', function(assert) {
+		assert.htmlEqual(
 			'<b style="background: url(smiley.gif); background: red;">test</b>',
 			'<b style="background: red;">test</b>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b style="background: url(smiley.gif); background: red;">test</b>');
+		var serializedActual = assert._serializeHtml('<b style="background: url(smiley.gif); background: red;">test</b>');
 		// Validate everything but backgroundColor and backgroundImage
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -1021,19 +1042,20 @@
 			]
 		);
 		// Validate backgroundColor
-		assertStylePropIsColor(serializedActual[0], 'backgroundColor', 'red');
+		assertStylePropIsColor(assert, serializedActual[0], 'backgroundColor', 'red');
 		// Validate backgroundImage
-		assertBackgroundImageIsNone(serializedActual[0]);
+		assertBackgroundImageIsNone(assert, serializedActual[0]);
 	});
 
-	test('Equivalent HTML - Multiple root elements', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Multiple root elements', function(assert) {
+		assert.htmlEqual(
 			'<b title=strong>test</b><i title=em>ing</i>',
 			'<b title="strong">test</b><i title="em">ing</i>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<b title=strong>test</b><i title=em>ing</i>');
+		var serializedActual = assert._serializeHtml('<b title=strong>test</b><i title=em>ing</i>');
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -1068,14 +1090,15 @@
 		);
 	});
 
-	test('Equivalent HTML - Multiple root nodes', function() {
-		QUnit.assert.htmlEqual(
+	test('Equivalent HTML - Multiple root nodes', function(assert) {
+		assert.htmlEqual(
 			'<B>test</B>ing<I>!</I>',
 			'<b>test</b>ing<i>!</i>'
 		);
 
-		var serializedActual = QUnit.assert._serializeHtml('<B>test</B>ing<I>!</I>');
+		var serializedActual = assert._serializeHtml('<B>test</B>ing<I>!</I>');
 		deepEqualIgnoringUnlistedStyleRules(
+			assert,
 			serializedActual,
 			[
 				{
@@ -1111,80 +1134,80 @@
 		);
 	});
 
-	test('Inequivalent HTML', function() {
-		QUnit.assert.notHtmlEqual(
+	test('Inequivalent HTML', function(assert) {
+		assert.notHtmlEqual(
 			'test fail',
 			'TEST FAIL',
 			'Text node value casing differences cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'test fail',
 			'<b>test fail</b>',
 			'Different DOM structure causes inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b>test fail</b>',
 			'<i>test fail</i>',
 			'Same DOM structure but different elements causes inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b>test fail</b>',
 			'<b>test <i>fail</i></b>',
 			'Extra internal element wrappers cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b title="TEST">test</b>',
 			'<b title="test">test</b>',
 			'Attribute value casing differences cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b id="actual">test fail</b>',
 			'<b id="expected">test fail</b>',
 			'Attribute value differences cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b class="class1 class2">test fail</b>',
 			'<b class="class2 class1">test fail</b>',
 			'CSS class name ordering differences cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b style="color:red;">test</b>',
 			'<b style="color:green;">test</b>',
 			'Computed style differences for a single rule cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b style="font-weight:100; font-weight:900;">test</b>',
 			'<b style="font-weight:100;">test</b>',
 			'Computed style differences for an overridden single rule cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b style="font-weight:bold; color:red;">test</b>',
 			'<b style="font-weight:bold;">test</b>',
 			'Computed style differences over all rules cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b>test</b>',
 			'<b>test</b><b>ing</b>',
 			'Different number of nodes (and different overall text content) cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b>testing</b>',
 			'<b>test</b><b>ing</b>',
 			'Different number of nodes (but same overall text content) cause inequality'
 		);
 
-		QUnit.assert.notHtmlEqual(
+		assert.notHtmlEqual(
 			'<b>testing</b>',
 			'<b>test</b>ing',
 			'Different number of nodes (and node types) cause inequality'

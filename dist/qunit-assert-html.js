@@ -1,4 +1,6 @@
-/*global QUnit:false */
+/*! qunit-assert-html - v0.2.0 - 2013-03-04
+* https://github.com/JamesMGreene/qunit-assert-html
+* Copyright (c) 2013 James M. Greene; Licensed MIT */
 (function( QUnit, window, undefined ) {
 	"use strict";
 
