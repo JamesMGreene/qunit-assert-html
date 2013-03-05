@@ -334,7 +334,7 @@
 		/**
 		 * Compare two snippets of HTML for equality after normalization.
 		 *
-		 * @example htmlEqual("<B>Hello, QUnit!</B>  ", "<b>Hello, QUnit!</b>", "HTML should be equal");
+		 * @example assert.htmlEqual("<B>Hello, QUnit!</B>  ", "<b>Hello, QUnit!</b>", "HTML should be equal");
 		 * @param {String} actual The actual HTML before normalization.
 		 * @param {String} expected The excepted HTML before normalization.
 		 * @param {String} [message] Optional message to display in the results.
@@ -350,7 +350,7 @@
 		/**
 		 * Compare two snippets of HTML for inequality after normalization.
 		 *
-		 * @example notHtmlEqual("<b>Hello, <i>QUnit!</i></b>", "<b>Hello, QUnit!</b>", "HTML should not be equal");
+		 * @example assert.notHtmlEqual("<b>Hello, <i>QUnit!</i></b>", "<b>Hello, QUnit!</b>", "HTML should not be equal");
 		 * @param {String} actual The actual HTML before normalization.
 		 * @param {String} expected The excepted HTML before normalization.
 		 * @param {String} [message] Optional message to display in the results.
@@ -367,7 +367,7 @@
 		 * @private
 		 * Normalize and serialize an HTML snippet. Primarily only exposed for unit testing purposes.
 		 *
-		 * @example _serializeHtml('<b style="color:red;">Test</b>');
+		 * @example assert._serializeHtml('<b style="color:red;">Test</b>');
 		 * @param {String} html The HTML snippet to normalize and serialize.
 		 * @returns {Object[]} The normalized and serialized form of the HTML snippet.
 		 */

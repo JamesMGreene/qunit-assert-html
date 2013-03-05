@@ -14,6 +14,7 @@ assert.notHtmlEqual(actual, expected [, message]);
 ```js
 test('Example unit test', function(assert) {
   assert.htmlEqual('<B TITLE=test>test</B>', '<b title="test">test</b>');
+  assert.notHtmlEqual('<br />', '<hr />');
 });
 ```
 
