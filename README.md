@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/JamesMGreene/qunit-assert-html.png)](https://travis-ci.org/JamesMGreene/qunit-assert-html)
 
-# QUnit HTML assertion addon
+# QUnit HTML assertion plugin
 
-This addon for [QUnit](https://github.com/jquery/qunit) adds `htmlEqual` and `notHtmlEqual` assertion methods to test that two HTML strings are equivalent (or not) after a rigorous normalization process.
+This plugin for [QUnit](https://github.com/jquery/qunit) adds `htmlEqual` and `notHtmlEqual` assertion methods to test that two HTML strings are equivalent (or not) after a rigorous normalization process.
 
 ## Usage
 ```js
@@ -21,8 +21,8 @@ test('Example unit test', function(assert) {
 For more examples, refer to the unit tests.
 
 ## Compatibility
- - **Browsers**: This addon currently works in IE7+ (IE6 untested) but does not fully normalize certain CSS style properties (e.g. color values) in IE < 9. For a little more info, see [QUnit PR #368](https://github.com/jquery/qunit/pull/368).
- - **Node.js**: This addon has not been tested in Node.js.  However, it does require DOM support for iframes, so you would need to utilize [jsdom](https://github.com/tmpvar/jsdom), [Cheerio](https://github.com/MatthewMueller/cheerio), etc., to make it work at all.
+ - **Browsers**: This plugin currently works in IE7+ (IE6 untested) but does not fully normalize certain CSS style properties (e.g. color values) in IE < 9. For a little more info, see [QUnit PR #368](https://github.com/jquery/qunit/pull/368).
+ - **Node.js**: This plugin has not been tested in Node.js.  However, it does require DOM support for iframes, so you would need to utilize [jsdom](https://github.com/tmpvar/jsdom), [Cheerio](https://github.com/MatthewMueller/cheerio), etc., to make it work at all.
 
 ## Documentation
 _(Coming soon)_
