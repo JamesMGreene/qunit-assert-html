@@ -245,8 +245,8 @@
 				// Initialize the background iframe!
 				if ( !iframe || !iframeWin || !iframeDoc ) {
 					iframe = window.document.createElement( "iframe" );
-					QUnit.addEvent( iframe, "load", iframeLoaded );
-					QUnit.addEvent( iframe, "readystatechange", iframeReadied );
+					iframe.onload = iframeLoaded;
+					iframe.onreadystatechange = iframeReadied;
 					iframe.style.position = "absolute";
 					iframe.style.top = iframe.style.left = "-1000px";
 					iframe.height = iframe.width = 0;
