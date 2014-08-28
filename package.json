@@ -1,7 +1,7 @@
 {
   "name": "qunit-assert-html",
   "description": "QUnit HTML assertion addon",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "homepage": "https://github.com/JamesMGreene/qunit-assert-html",
   "author": {
     "name": "James M. Greene",
@@ -27,7 +27,7 @@
     "test": "grunt travis --verbose"
   },
   "dependencies": {
-    "qunitjs": ">= 1.11.0"
+    "qunitjs": "^1.11.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
