@@ -1,6 +1,6 @@
-/*! qunit-assert-html - v0.2.0 - 2013-03-04
+/*! qunit-assert-html - v0.2.2 - 2014-08-28
 * https://github.com/JamesMGreene/qunit-assert-html
-* Copyright (c) 2013 James M. Greene; Licensed MIT */
+* Copyright (c) 2014 James M. Greene; Licensed MIT */
 (function( QUnit, window, undefined ) {
 	"use strict";
 
@@ -46,6 +46,16 @@
 			return keys;
 		};
 	})();
+
+	var addEvent = function( elem, type, fn ) {
+		if ( elem.addEventListener ) {
+			// Standards-based browsers
+			elem.addEventListener( type, fn, false );
+		} else if ( elem.attachEvent ) {
+			// support: IE <9
+			elem.attachEvent( "on" + type, fn );
+		}
+	};
 
 	/**
 	 * Calculate based on `currentStyle`/`getComputedStyle` styles instead
@@ -247,8 +257,8 @@
 				// Initialize the background iframe!
 				if ( !iframe || !iframeWin || !iframeDoc ) {
 					iframe = window.document.createElement( "iframe" );
-					QUnit.addEvent( iframe, "load", iframeLoaded );
-					QUnit.addEvent( iframe, "readystatechange", iframeReadied );
+					addEvent( iframe, "load", iframeLoaded );
+					addEvent( iframe, "readystatechange", iframeReadied );
 					iframe.style.position = "absolute";
 					iframe.style.top = iframe.style.left = "-1000px";
 					iframe.height = iframe.width = 0;
@@ -336,7 +346,7 @@
 		/**
 		 * Compare two snippets of HTML for equality after normalization.
 		 *
-		 * @example htmlEqual("<B>Hello, QUnit!</B>  ", "<b>Hello, QUnit!</b>", "HTML should be equal");
+		 * @example assert.htmlEqual("<B>Hello, QUnit!</B>  ", "<b>Hello, QUnit!</b>", "HTML should be equal");
 		 * @param {String} actual The actual HTML before normalization.
 		 * @param {String} expected The excepted HTML before normalization.
 		 * @param {String} [message] Optional message to display in the results.
@@ -352,7 +362,7 @@
 		/**
 		 * Compare two snippets of HTML for inequality after normalization.
 		 *
-		 * @example notHtmlEqual("<b>Hello, <i>QUnit!</i></b>", "<b>Hello, QUnit!</b>", "HTML should not be equal");
+		 * @example assert.notHtmlEqual("<b>Hello, <i>QUnit!</i></b>", "<b>Hello, QUnit!</b>", "HTML should not be equal");
 		 * @param {String} actual The actual HTML before normalization.
 		 * @param {String} expected The excepted HTML before normalization.
 		 * @param {String} [message] Optional message to display in the results.
@@ -369,7 +379,7 @@
 		 * @private
 		 * Normalize and serialize an HTML snippet. Primarily only exposed for unit testing purposes.
 		 *
-		 * @example _serializeHtml('<b style="color:red;">Test</b>');
+		 * @example assert._serializeHtml('<b style="color:red;">Test</b>');
 		 * @param {String} html The HTML snippet to normalize and serialize.
 		 * @returns {Object[]} The normalized and serialized form of the HTML snippet.
 		 */

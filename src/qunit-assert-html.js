@@ -45,6 +45,16 @@
 		};
 	})();
 
+	var addEvent = function( elem, type, fn ) {
+		if ( elem.addEventListener ) {
+			// Standards-based browsers
+			elem.addEventListener( type, fn, false );
+		} else if ( elem.attachEvent ) {
+			// support: IE <9
+			elem.attachEvent( "on" + type, fn );
+		}
+	};
+
 	/**
 	 * Calculate based on `currentStyle`/`getComputedStyle` styles instead
 	 */
@@ -245,8 +255,8 @@
 				// Initialize the background iframe!
 				if ( !iframe || !iframeWin || !iframeDoc ) {
 					iframe = window.document.createElement( "iframe" );
-					QUnit.addEvent( iframe, "load", iframeLoaded );
-					QUnit.addEvent( iframe, "readystatechange", iframeReadied );
+					addEvent( iframe, "load", iframeLoaded );
+					addEvent( iframe, "readystatechange", iframeReadied );
 					iframe.style.position = "absolute";
 					iframe.style.top = iframe.style.left = "-1000px";
 					iframe.height = iframe.width = 0;
