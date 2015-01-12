@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/JamesMGreene/qunit-assert-html.png)](https://travis-ci.org/JamesMGreene/qunit-assert-html)
+[![Build Status](https://travis-ci.org/JamesMGreene/qunit-assert-html.png)](https://travis-ci.org/JamesMGreene/qunit-assert-html) [![NPM version](https://badge.fury.io/js/qunit-assert-html.png)](https://www.npmjs.com/package/qunit-assert-html)
 
 # QUnit HTML assertion plugin
 
