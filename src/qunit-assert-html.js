@@ -339,6 +339,8 @@
 		return function() { return iframeApi; };
 	})();
 
+
+
 	QUnit.extend( QUnit.assert, {
 
 		/**
@@ -350,10 +352,7 @@
 		 * @param {String} [message] Optional message to display in the results.
 		 */
 		htmlEqual: function( actual, expected, message ) {
-			if ( !message ) {
-				message = "HTML should be equal";
-			}
-
+			message = message || "HTML should be equal";
 			this.deepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
 		},
 
@@ -366,10 +365,7 @@
 		 * @param {String} [message] Optional message to display in the results.
 		 */
 		notHtmlEqual: function( actual, expected, message ) {
-			if ( !message ) {
-				message = "HTML should not be equal";
-			}
-
+			message = message || "HTML should not be equal";
 			this.notDeepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
 		},
 
@@ -384,4 +380,12 @@
 		_serializeHtml: serializeHtml
 
 	});
-})( QUnit, this );
+
+
+	// Add an alias for `notHtmlEqual` == `htmlNotEqual`
+	// People will prefer one name or the another... hopefully they just pick one
+	// and stick with it. ;)
+	QUnit.assert.htmlNotEqual = QUnit.assert.notHtmlEqual;
+
+
+})( QUnit, this || window );

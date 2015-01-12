@@ -1,5 +1,4 @@
-/*global module:false, test:false */
-(function() {
+(function(module, test) {
 	'use strict';
 
 	var deepEqualIgnoringUnlistedStyleRules = null,
@@ -172,7 +171,7 @@
 
 
 
-	module('qunit-html addon tests');
+	module('qunit-assert-html plugin tests');
 
 	test('Equivalent HTML - Identical text nodes are equivalent without normalization', function(assert) {
 		assert.htmlEqual('test', 'test');
@@ -1214,4 +1213,11 @@
 		);
 	});
 
-})();
+	test('Alias `htmlNotEqual` assertion method exists', function(assert) {
+	  assert.expect(2);
+
+	  assert.strictEqual(typeof assert.notHtmlEqual, 'function', 'Primary `notHtmlEqual` assertion method exists');
+	  assert.strictEqual(assert.htmlNotEqual, assert.notHtmlEqual, 'Secondary alias `htmlNotEqual` assertion method exists');
+	});
+
+})(QUnit.module, QUnit.test);

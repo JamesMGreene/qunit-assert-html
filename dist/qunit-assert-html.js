@@ -1,6 +1,6 @@
-/*! qunit-assert-html - v0.2.2 - 2014-08-28
+/*! qunit-assert-html - v0.3.0 - 2015-01-12
 * https://github.com/JamesMGreene/qunit-assert-html
-* Copyright (c) 2014 James M. Greene; Licensed MIT */
+* Copyright (c) 2015 James M. Greene; Licensed MIT */
 (function( QUnit, window, undefined ) {
 	"use strict";
 
@@ -341,6 +341,8 @@
 		return function() { return iframeApi; };
 	})();
 
+
+
 	QUnit.extend( QUnit.assert, {
 
 		/**
@@ -352,10 +354,7 @@
 		 * @param {String} [message] Optional message to display in the results.
 		 */
 		htmlEqual: function( actual, expected, message ) {
-			if ( !message ) {
-				message = "HTML should be equal";
-			}
-
+			message = message || "HTML should be equal";
 			this.deepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
 		},
 
@@ -368,10 +367,7 @@
 		 * @param {String} [message] Optional message to display in the results.
 		 */
 		notHtmlEqual: function( actual, expected, message ) {
-			if ( !message ) {
-				message = "HTML should not be equal";
-			}
-
+			message = message || "HTML should not be equal";
 			this.notDeepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
 		},
 
@@ -386,4 +382,12 @@
 		_serializeHtml: serializeHtml
 
 	});
-})( QUnit, this );
+
+
+	// Add an alias for `notHtmlEqual` == `htmlNotEqual`
+	// People will prefer one name or the another... hopefully they just pick one
+	// and stick with it. ;)
+	QUnit.assert.htmlNotEqual = QUnit.assert.notHtmlEqual;
+
+
+})( QUnit, this || window );

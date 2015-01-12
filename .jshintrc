@@ -12,5 +12,13 @@
   "eqnull": true,
   "node": true,
   "es3": true,
-  "es5": false
+  "es5": false,
+
+  /* Environment */
+  "browser": true,
+
+  /* Global */
+  "globals": {
+    "QUnit": false
+  }
 }
