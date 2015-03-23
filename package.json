@@ -1,12 +1,12 @@
 {
   "name": "qunit-assert-html",
   "description": "QUnit HTML assertion addon",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "homepage": "https://github.com/JamesMGreene/qunit-assert-html",
   "author": {
     "name": "James M. Greene",
     "email": "james.m.greene@gmail.com",
-    "url": "http://jamesgreene.net/"
+    "url": "http://greene.io/"
   },
   "repository": {
     "type": "git",
