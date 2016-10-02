@@ -1,6 +1,6 @@
-'use strict';
-
 module.exports = function(grunt) {
+  'use strict';
+
 
   var localPort = 8000;
 
@@ -62,7 +62,7 @@ module.exports = function(grunt) {
       }
     }
   });
-  
+
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-connect');

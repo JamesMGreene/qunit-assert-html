@@ -1,24 +1,33 @@
 {
+  "globals": {
+    "QUnit": false,
+    // For AMD
+    "define": false,
+    // For Node.js & CommonJS
+    "require": false,
+    "module": false,
+    "exports": false
+  },
+
+  "bitwise": true,
+  "camelcase": true,
   "curly": true,
   "eqeqeq": true,
   "immed": true,
-  "latedef": true,
+  "latedef": false,
   "newcap": true,
   "noarg": true,
-  "sub": true,
+  "noempty": true,
+  "nonew": true,
+  "plusplus": false,
   "undef": true,
   "unused": true,
-  "boss": true,
-  "eqnull": true,
-  "node": true,
-  "es3": true,
-  "es5": false,
+  "trailing": true,
 
-  /* Environment */
+  "proto": true,
+  "sub": true,
+
   "browser": true,
 
-  /* Global */
-  "globals": {
-    "QUnit": false
-  }
+  "onevar": true
 }
