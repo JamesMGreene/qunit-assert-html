@@ -28,6 +28,39 @@
 
   }(function(QUnit) {
 
+    /**
+     * Find an appropriate `Assert` context to `push` results to.
+     * @param * context - An unknown context, possibly `Assert`, `Test`, or neither
+     * @private
+     */
+    function _getPushContext(context) {
+      var pushContext;
+
+      if (context && typeof context.push === "function") {
+        // `context` is an `Assert` context
+        pushContext = context;
+      }
+      else if (context && context.assert && typeof context.assert.push === "function") {
+        // `context` is a `Test` context
+        pushContext = context.assert;
+      }
+      else if (
+        QUnit && QUnit.config && QUnit.config.current && QUnit.config.current.assert &&
+        typeof QUnit.config.current.assert.push === "function"
+      ) {
+        // `context` is an unknown context but we can find the `Assert` context via QUnit
+        pushContext = QUnit.config.current.assert;
+      }
+      else if (QUnit && typeof QUnit.push === "function") {
+        pushContext = QUnit.push;
+      }
+      else {
+        throw new Error("Could not find the QUnit `Assert` context to push results");
+      }
+
+      return pushContext;
+    }
+
     var trim = function( s ) {
       if ( !s ) {
         return "";
@@ -378,8 +411,19 @@
        * @param {String} [message] Optional message to display in the results.
        */
       htmlEqual: function( actual, expected, message ) {
+        var serializedActual, serializedExpected,
+            pushContext = _getPushContext( this );
+
         message = message || "HTML should be equal";
-        this.deepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
+        serializedActual = serializeHtml( actual );
+        serializedExpected = serializeHtml( expected );
+
+        pushContext.push(
+          QUnit.equiv( serializedActual, serializedExpected ),
+          serializedActual,
+          serializedExpected,
+          message
+        );
       },
 
       /**
@@ -391,8 +435,19 @@
        * @param {String} [message] Optional message to display in the results.
        */
       notHtmlEqual: function( actual, expected, message ) {
+        var serializedActual, serializedExpected,
+            pushContext = _getPushContext( this );
+
         message = message || "HTML should not be equal";
-        this.notDeepEqual( serializeHtml( actual ), serializeHtml( expected ), message );
+        serializedActual = serializeHtml( actual );
+        serializedExpected = serializeHtml( expected );
+
+        pushContext.push(
+          !QUnit.equiv( serializedActual, serializedExpected ),
+          serializedActual,
+          serializedExpected,
+          message
+        );
       },
 
       /**
