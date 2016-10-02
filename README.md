@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/JamesMGreene/qunit-assert-html.png?branch=master)](https://travis-ci.org/JamesMGreene/qunit-assert-html) [![NPM version](https://badge.fury.io/js/qunit-assert-html.png)](https://www.npmjs.com/package/qunit-assert-html)
+[![Build Status](https://travis-ci.org/JamesMGreene/qunit-assert-html.svg?branch=master)](https://travis-ci.org/JamesMGreene/qunit-assert-html) [![NPM version](https://badge.fury.io/js/qunit-assert-html.svg)](https://www.npmjs.com/package/qunit-assert-html)
 
 # QUnit HTML assertion plugin
 
@@ -31,5 +31,5 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 
 ## License
-Copyright (c) 2013-2015 James M. Greene
+Copyright (c) 2013-2016 James M. Greene
 Licensed under the MIT license.
