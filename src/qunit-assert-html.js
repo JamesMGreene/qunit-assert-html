@@ -171,8 +171,13 @@
 
           for ( i = 0, styleCount = styleKeys.length ; i < styleCount ; i++ ) {
             key = styleKeys[i];
-            if ( key !== "cssText" && typeof style[key] === "string" && style[key] ) {
-              styles[camelCase( key )] = style[key];
+            if ( typeof style[key] === "string" && style[key] ) {
+              if ( key === "cssFloat" || key === "styleFloat" ) {
+                styles["float"] = style[key];
+              }
+              else if ( key !== "cssText" ) {
+                styles[camelCase( key )] = style[key];
+              }
             }
           }
         }
@@ -185,14 +190,18 @@
 
           for ( i = 0, styleCount = styleKeys.length ; i < styleCount ; i++ ) {
             key = styleKeys[i];
-            if ( key !== "cssText" && typeof style[key] === "string" && style[key] ) {
-              styles[key] = style[key];
+            if ( typeof style[key] === "string" && style[key] ) {
+              if ( key === "cssFloat" || key === "styleFloat" ) {
+                styles["float"] = style[key];
+              }
+              else if ( key !== "cssText" ) {
+                styles[key] = style[key];
+              }
             }
           }
         }
 
         return styles;
-
       };
     })();
 
@@ -234,7 +243,7 @@
     var serializeNode = function( node, rootNodeStyles ) {
       var serializedNode;
 
-      switch (node.nodeType) {
+      switch ( node.nodeType ) {
         case 1:   // Node.ELEMENT_NODE
           serializedNode = serializeElementNode( node, rootNodeStyles );
           break;
@@ -255,11 +264,9 @@
           };
           break;
         case 5:   // Node.ENTITY_REFERENCE_NODE
-        case 6:   // Node.ENTITY_NODE
         case 9:   // Node.DOCUMENT_NODE
         case 10:  // Node.DOCUMENT_TYPE_NODE
         case 11:  // Node.DOCUMENT_FRAGMENT_NODE
-        case 12:  // Node.NOTATION_NODE
           serializedNode = {
             NodeType: node.nodeType,
             NodeName: node.nodeName
@@ -267,6 +274,10 @@
           break;
         case 2:   // Node.ATTRIBUTE_NODE
           throw new Error( "`node.nodeType` was `Node.ATTRIBUTE_NODE` (2), which is not supported by this method" );
+        case 6:   // Node.ENTITY_NODE
+          throw new Error( "`node.nodeType` was `Node.ENTITY_NODE` (6), which is not supported by this method" );
+        case 12:  // Node.NOTATION_NODE
+          throw new Error( "`node.nodeType` was `Node.NOTATION_NODE` (12), which is not supported by this method" );
         default:
           throw new Error( "`node.nodeType` was not recognized: " + node.nodeType );
       }
@@ -290,6 +301,141 @@
       scratch.reset();
 
       return serializedHtml;
+    };
+
+    var singletonElements = " " + [
+          "area", "base", "br", "col", "command", "embed", "hr", "img", "input",
+          "keygen", "link", "meta", "param", "source", "track", "wbr"
+        ].join( " " ) + " ";
+    var isEmptyElement = function( serializedElementNode ) {
+      return (
+        serializedElementNode.ChildNodes.length === 0 &&
+        (
+          singletonElements.indexOf( serializedElementNode.NodeName ) >= 0 ||
+          (
+            serializedElementNode.NodeName === "colgroup" &&
+            serializedElementNode.Attributes.hasOwnProperty( "span" )
+          )
+        )
+      );
+    };
+
+    var dashify = (function() {
+      var dashifyFn = function( s ) {
+        return s
+          .replace( /([\da-z])([\dA-Z])/, function( all, letter1, letter2 ) {
+            return letter1 + "-" + ( letter2 + "" ).toLowerCase();
+          })
+          .replace( /^ms-/, "-ms-" );
+      };
+
+      var dashifyMemoizer = {};
+
+      return function( s ) {
+        var temp = dashifyMemoizer[s];
+        if ( temp ) {
+          return temp;
+        }
+
+        temp = dashifyFn( s );
+        dashifyMemoizer[s] = temp;
+        return temp;
+      };
+    })();
+
+    var deserializeElementNode = function( serializedElementNode ) {
+      var deserializedElementNodeHtml = "";
+
+      deserializedElementNodeHtml += "<" + serializedElementNode.NodeName;
+
+      var attrNames = objectKeys( serializedElementNode.Attributes ).sort();
+      for ( var i = 0, len = attrNames.length; i < len; i++ ) {
+        if ( attrNames[i] !== "style" ) {
+          deserializedElementNodeHtml +=
+            " " + attrNames[i] + "=\"" +
+            serializedElementNode.Attributes[attrNames[i]] + "\"";
+        }
+        else {
+          var styles = serializedElementNode.Attributes[attrNames[i]];
+          var styleKeys = objectKeys( styles ).sort();
+
+          if ( styleKeys.length > 0 ) {
+            deserializedElementNodeHtml += " " + attrNames[i] + "=\"";
+
+            var stylesArr = [];
+            for ( var j = 0, count = styleKeys.length; j < count; j++ ) {
+              stylesArr.push(
+                dashify( styleKeys[j] ) + ":" + styles[styleKeys[j]] + ";"
+              );
+            }
+            deserializedElementNodeHtml += stylesArr.join( " " );
+            deserializedElementNodeHtml += "\"";
+          }
+        }
+      }
+
+      if ( isEmptyElement( serializedElementNode ) ) {
+        deserializedElementNodeHtml += " />";
+      }
+      else {
+        deserializedElementNodeHtml +=
+          ">" +
+          deserializeHtml( serializedElementNode.ChildNodes ) +
+          "</" + serializedElementNode.NodeName + ">";
+      }
+
+      return deserializedElementNodeHtml;
+    };
+
+    var deserializeNode = function( serializedNode ) {
+      var deserializedNodeHtml = "";
+
+      switch ( serializedNode.NodeType ) {
+        case 1:   // Node.ELEMENT_NODE
+          deserializedNodeHtml += deserializeElementNode( serializedNode );
+          break;
+        case 3:   // Node.TEXT_NODE
+          deserializedNodeHtml += serializedNode.NodeValue;
+          break;
+        case 4:   // Node.CDATA_SECTION_NODE
+          deserializedNodeHtml += "<![CDATA[" + serializedNode.NodeValue + "]]>";
+          break;
+        case 7:   // Node.PROCESSING_INSTRUCTION_NODE
+          deserializedNodeHtml += "<?" + serializedNode.NodeName + " " + serializedNode.NodeValue + "?>";
+          break;
+        case 8:   // Node.COMMENT_NODE
+          deserializedNodeHtml += "<!-- " + serializedNode.NodeValue + " -->";
+          break;
+        case 5:   // Node.ENTITY_REFERENCE_NODE
+          deserializedNodeHtml += "&" + serializedNode.NodeName + ";";
+          break;
+        case 10:  // Node.DOCUMENT_TYPE_NODE
+          deserializedNodeHtml += "<!DOCTYPE " + serializedNode.NodeName + ">";
+          break;
+        case 9:   // Node.DOCUMENT_NODE
+        case 11:  // Node.DOCUMENT_FRAGMENT_NODE
+          deserializedNodeHtml += "";
+          break;
+        case 2:   // Node.ATTRIBUTE_NODE
+          throw new Error( "`serializedNode.NodeType` was `Node.ATTRIBUTE_NODE` (2), which is not supported by this method" );
+        case 6:   // Node.ENTITY_NODE
+          throw new Error( "`serializedNode.NodeType` was `Node.ENTITY_NODE` (6), which is not supported by this method" );
+        case 12:  // Node.NOTATION_NODE
+          throw new Error( "`serializedNode.NodeType` was `Node.NOTATION_NODE` (12), which is not supported by this method" );
+        default:
+          throw new Error( "`serializedNode.NodeType` was not recognized: " + serializedNode.NodeType );
+      }
+
+      return deserializedNodeHtml;
+    };
+
+    var deserializeHtml = function( serializedHtmlNodes ) {
+      var i, len,
+          deserializedHtml = "";
+      for ( i = 0, len = serializedHtmlNodes.length; i < len; i++ ) {
+        deserializedHtml += deserializeNode( serializedHtmlNodes[i] );
+      }
+      return deserializedHtml;
     };
 
     var getCleanSlate = (function() {
@@ -420,8 +566,8 @@
 
         pushContext.push(
           QUnit.equiv( serializedActual, serializedExpected ),
-          serializedActual,
-          serializedExpected,
+          deserializeHtml( serializedActual ),
+          deserializeHtml( serializedExpected ),
           message
         );
       },
@@ -444,8 +590,8 @@
 
         pushContext.push(
           !QUnit.equiv( serializedActual, serializedExpected ),
-          serializedActual,
-          serializedExpected,
+          deserializeHtml( serializedActual ),
+          deserializeHtml( serializedExpected ),
           message
         );
       },
